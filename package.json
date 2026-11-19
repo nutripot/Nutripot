@@ -1,0 +1,35 @@
+{
+  "name": "businesshub-enterprise",
+  "version": "1.0.0",
+  "description": "Enterprise-grade Business Management System on Cloudflare Workers, D1, and R2",
+  "private": true,
+  "scripts": {
+    "test": "python tests/test_migrations.py && python tests/test_financial_math.py",
+    "typecheck": "tsc --noEmit",
+    "build": "wrangler deploy --dry-run",
+    "deploy": "wrangler deploy",
+    "d1:migrate:local": "wrangler d1 migrations apply DB --local",
+    "d1:migrate:prod": "wrangler d1 migrations apply DB --remote"
+  },
+  "keywords": [
+    "enterprise",
+    "erp",
+    "inventory",
+    "purchasing",
+    "sales",
+    "accounting",
+    "cloudflare-workers",
+    "d1",
+    "r2"
+  ],
+  "author": "BusinessHub Engineering Team",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231121.0",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.19.0"
+  }
+}

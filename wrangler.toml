@@ -1,0 +1,49 @@
+# ============================================================================
+# BusinessHub Enterprise - Cloudflare Workers & Infrastructure Bindings
+# ============================================================================
+
+name = "businesshub-enterprise"
+account_id = "15c69d46a3b074b90340d99479d4b542"
+main = "src/index.ts"
+compatibility_date = "2026-11-19"
+compatibility_flags = ["nodejs_compat"]
+
+# 1. Cloudflare D1 Relational SQLite Database
+[[d1_databases]]
+binding = "DB"
+database_name = "businesshub-production-db"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# 2. Cloudflare R2 Object Storage
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "businesshub-media-production"
+
+# 3. Static Web Client Distribution
+[site]
+bucket = "./dist"
+
+# 4. Environment Variables
+[vars]
+ENVIRONMENT = "production"
+BASE_URL = "https://hub.yourcompany.com"
+SESSION_TTL_SECONDS = "604800"
+
+# 5. Staging Environment
+[env.staging]
+name = "businesshub-enterprise-staging"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "businesshub-staging-db"
+database_id = "11111111-1111-1111-1111-111111111111"
+migrations_dir = "migrations"
+
+[[env.staging.r2_buckets]]
+binding = "STORAGE"
+bucket_name = "businesshub-media-staging"
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+BASE_URL = "https://staging-hub.yourcompany.com"

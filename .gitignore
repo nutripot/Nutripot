@@ -1,0 +1,17 @@
+# Dependencies & Tools
+node_modules/
+.tools/
+dist/
+.wrangler/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# OS and Editor
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
