@@ -119,6 +119,15 @@ export class SalesRepository implements ISalesRepository {
   async create(invoice: Omit<SalesInvoice, 'createdAt' | 'updatedAt'>, items: Omit<SalesInvoiceItem, 'id' | 'salesInvoiceId'>[]): Promise<SalesInvoice> {
     const now = new Date().toISOString();
 
+    const shippingCharges = Number(invoice.shippingChargesPaise ?? 0);
+    const paidAmount = Number(invoice.paidAmountPaise ?? 0);
+    const cgst = Number(invoice.cgstPaise ?? 0);
+    const sgst = Number(invoice.sgstPaise ?? 0);
+    const igst = Number(invoice.igstPaise ?? 0);
+    const totalTax = Number(invoice.totalTaxPaise ?? 0);
+    const subtotal = Number(invoice.subtotalPaise ?? 0);
+    const totalAmount = Number(invoice.totalAmountPaise ?? 0);
+
     const statements: D1PreparedStatement[] = [
       this.db
         .prepare(
@@ -135,16 +144,16 @@ export class SalesRepository implements ISalesRepository {
           invoice.customerId,
           invoice.invoiceDate,
           invoice.dueDate,
-          invoice.placeOfSupply,
-          invoice.status,
-          invoice.subtotalPaise,
-          invoice.cgstPaise,
-          invoice.sgstPaise,
-          invoice.igstPaise,
-          invoice.totalTaxPaise,
-          invoice.shippingChargesPaise,
-          invoice.totalAmountPaise,
-          invoice.paidAmountPaise,
+          invoice.placeOfSupply || '33',
+          invoice.status || 'DRAFT',
+          subtotal,
+          cgst,
+          sgst,
+          igst,
+          totalTax,
+          shippingCharges,
+          totalAmount,
+          paidAmount,
           invoice.notes || null,
           invoice.idempotencyKey || null,
           now,
@@ -156,6 +165,10 @@ export class SalesRepository implements ISalesRepository {
     const createdItems: SalesInvoiceItem[] = [];
     for (const item of items) {
       const itemId = 'sii_' + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
+      const discountPaise = Number(item.discountPaise ?? 0);
+      const itemCgst = Number(item.cgstPaise ?? 0);
+      const itemSgst = Number(item.sgstPaise ?? 0);
+      const itemIgst = Number(item.igstPaise ?? 0);
       statements.push(
         this.db
           .prepare(
@@ -171,14 +184,14 @@ export class SalesRepository implements ISalesRepository {
             item.quantityMilliUnits,
             item.unitPricePaise,
             item.taxRateBps,
-            item.cgstPaise,
-            item.sgstPaise,
-            item.igstPaise,
-            item.discountPaise,
+            itemCgst,
+            itemSgst,
+            itemIgst,
+            discountPaise,
             item.totalAmountPaise
           )
       );
-      createdItems.push({ ...item, id: itemId, salesInvoiceId: invoice.id });
+      createdItems.push({ ...item, id: itemId, salesInvoiceId: invoice.id, discountPaise, cgstPaise: itemCgst, sgstPaise: itemSgst, igstPaise: itemIgst });
     }
 
     await this.db.batch(statements);

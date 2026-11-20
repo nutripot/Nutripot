@@ -145,6 +145,7 @@ export const PurchaseCreatePage: React.FC = () => {
           supplierId,
           billDate,
           dueDate,
+          supplierBillNumber: supplierInvoiceNumber.trim() || undefined,
           supplierInvoiceNumber: supplierInvoiceNumber.trim() || undefined,
           notes: notes.trim() || undefined,
           items: items.map((i) => ({

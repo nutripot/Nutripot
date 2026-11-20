@@ -85,6 +85,11 @@ export class CollectionRepository implements ICollectionRepository {
 
   async create(collection: Omit<Collection, 'createdAt'>, allocations: Omit<CollectionAllocation, 'id' | 'createdAt'>[]): Promise<Collection> {
     const now = new Date().toISOString();
+    const depositAccount = collection.depositAccount ? collection.depositAccount.trim() : 'BANK';
+    const amountPaise = Number(collection.amountPaise ?? 0);
+    const unallocatedPaise = Number(collection.unallocatedPaise ?? 0);
+    const referenceNumber = collection.referenceNumber ? collection.referenceNumber.trim() : null;
+    const notes = collection.notes ? collection.notes.trim() : null;
 
     const statements: D1PreparedStatement[] = [
       this.db
@@ -101,11 +106,11 @@ export class CollectionRepository implements ICollectionRepository {
           collection.customerId,
           collection.paymentDate,
           collection.paymentMode,
-          collection.amountPaise,
-          collection.referenceNumber || null,
-          collection.depositAccount,
-          collection.unallocatedPaise,
-          collection.notes || null,
+          amountPaise,
+          referenceNumber,
+          depositAccount,
+          unallocatedPaise,
+          notes,
           null,
           now,
           collection.createdBy

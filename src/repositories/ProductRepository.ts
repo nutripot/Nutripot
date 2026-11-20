@@ -100,6 +100,19 @@ export class ProductRepository implements IProductRepository {
 
   async create(product: Omit<Product, 'createdAt' | 'updatedAt'>): Promise<Product> {
     const now = new Date().toISOString();
+    const sku = (product.sku || '').trim();
+    const name = (product.name || '').trim();
+    const barcode = product.barcode ? product.barcode.trim() : null;
+    const description = product.description ? product.description.trim() : null;
+    const categoryId = product.categoryId || 'cat_finished_goods';
+    const uom = product.uom || 'PCS';
+    const hsnCode = (product.hsnCode || '21069099').trim();
+    const taxRateBps = Number(product.taxRateBps ?? 1800);
+    const costPricePaise = Number(product.costPricePaise ?? (product as any).purchasePricePaise ?? 0);
+    const sellingPricePaise = Number(product.sellingPricePaise ?? 0);
+    const minStockAlertLevel = Number(product.minStockAlertLevel ?? (product as any).reorderLevel ?? 0);
+    const isActive = product.isActive !== false ? 1 : 0;
+
     await this.db
       .prepare(
         `INSERT INTO products (
@@ -110,18 +123,18 @@ export class ProductRepository implements IProductRepository {
       )
       .bind(
         product.id,
-        product.sku.trim(),
-        product.barcode || null,
-        product.name.trim(),
-        product.description || null,
-        product.categoryId,
-        product.uom,
-        product.hsnCode.trim(),
-        product.taxRateBps,
-        product.costPricePaise,
-        product.sellingPricePaise,
-        product.minStockAlertLevel,
-        product.isActive ? 1 : 0,
+        sku,
+        barcode,
+        name,
+        description,
+        categoryId,
+        uom,
+        hsnCode,
+        taxRateBps,
+        costPricePaise,
+        sellingPricePaise,
+        minStockAlertLevel,
+        isActive,
         now,
         now
       )
@@ -129,6 +142,18 @@ export class ProductRepository implements IProductRepository {
 
     return {
       ...product,
+      sku,
+      name,
+      barcode: barcode || undefined,
+      description: description || undefined,
+      categoryId,
+      uom,
+      hsnCode,
+      taxRateBps: taxRateBps as TaxRateBps,
+      costPricePaise,
+      sellingPricePaise,
+      minStockAlertLevel,
+      isActive: Boolean(isActive),
       createdAt: now,
       updatedAt: now,
     };

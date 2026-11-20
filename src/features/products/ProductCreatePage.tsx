@@ -43,11 +43,14 @@ export const ProductCreatePage: React.FC = () => {
         body: JSON.stringify({
           sku: sku.trim().toUpperCase(),
           name: name.trim(),
-          hsnCode: hsnCode.trim() || undefined,
+          hsnCode: hsnCode.trim() || '21069099',
+          categoryId: 'cat_finished_goods',
           uom,
           taxRateBps,
+          costPricePaise: purchasePricePaise,
           purchasePricePaise,
           sellingPricePaise,
+          minStockAlertLevel: reorderLevel,
           reorderLevel,
         }),
       });

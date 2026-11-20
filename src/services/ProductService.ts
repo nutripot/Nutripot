@@ -34,8 +34,9 @@ export class ProductService implements IProductService {
       isActive: true,
     });
 
+    const cost = Number(data.costPricePaise ?? (data as any).purchasePricePaise ?? 0);
     // Initialize 0-balance row in inventory_balances
-    await this.invRepo.updateBalance(productId, 0, data.costPricePaise);
+    await this.invRepo.updateBalance(productId, 0, cost);
 
     await this.auditRepo.log({
       userId,

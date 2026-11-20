@@ -111,6 +111,10 @@ export class PurchaseRepository implements IPurchaseRepository {
   async create(bill: Omit<PurchaseBill, 'createdAt' | 'updatedAt'>, items: Omit<PurchaseBillItem, 'id' | 'purchaseBillId'>[]): Promise<PurchaseBill> {
     const now = new Date().toISOString();
 
+    const supplierBillNumber = (bill.supplierBillNumber ?? (bill as any).supplierInvoiceNumber ?? ('BILL-' + Date.now().toString().slice(-6)));
+    const shippingCharges = Number(bill.shippingChargesPaise ?? 0);
+    const paidAmount = Number(bill.paidAmountPaise ?? 0);
+
     const statements: D1PreparedStatement[] = [
       this.db
         .prepare(
@@ -125,15 +129,15 @@ export class PurchaseRepository implements IPurchaseRepository {
           bill.id,
           bill.billNumber,
           bill.supplierId,
-          bill.supplierBillNumber,
+          supplierBillNumber,
           bill.billDate,
           bill.dueDate,
-          bill.status,
+          bill.status || 'DRAFT',
           bill.subtotalPaise,
           bill.taxAmountPaise,
-          bill.shippingChargesPaise,
+          shippingCharges,
           bill.totalAmountPaise,
-          bill.paidAmountPaise,
+          paidAmount,
           bill.notes || null,
           bill.idempotencyKey || null,
           now,
@@ -145,6 +149,8 @@ export class PurchaseRepository implements IPurchaseRepository {
     const createdItems: PurchaseBillItem[] = [];
     for (const item of items) {
       const itemId = 'pbi_' + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
+      const discountPaise = Number(item.discountPaise ?? 0);
+      const taxAmountPaise = Number(item.taxAmountPaise ?? 0);
       statements.push(
         this.db
           .prepare(
@@ -160,12 +166,12 @@ export class PurchaseRepository implements IPurchaseRepository {
             item.quantityMilliUnits,
             item.unitPricePaise,
             item.taxRateBps,
-            item.taxAmountPaise,
-            item.discountPaise,
+            taxAmountPaise,
+            discountPaise,
             item.totalAmountPaise
           )
       );
-      createdItems.push({ ...item, id: itemId, purchaseBillId: bill.id });
+      createdItems.push({ ...item, id: itemId, purchaseBillId: bill.id, discountPaise, taxAmountPaise });
     }
 
     await this.db.batch(statements);

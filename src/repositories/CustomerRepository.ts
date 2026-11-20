@@ -45,6 +45,19 @@ export class CustomerRepository implements ICustomerRepository {
 
   async create(customer: Omit<Customer, 'createdAt' | 'updatedAt'>): Promise<Customer> {
     const now = new Date().toISOString();
+    const name = (customer.name || '').trim();
+    const companyName = customer.companyName ? customer.companyName.trim() : null;
+    const phone = customer.phone ? customer.phone.trim() : null;
+    const email = customer.email ? customer.email.trim() : null;
+    const gstin = customer.gstin ? customer.gstin.trim() : null;
+    const pan = customer.pan ? customer.pan.trim() : null;
+    const billingAddress = customer.billingAddress ? customer.billingAddress.trim() : null;
+    const shippingAddress = customer.shippingAddress ? customer.shippingAddress.trim() : null;
+    const creditLimitPaise = Number(customer.creditLimitPaise ?? 0);
+    const creditDays = Number(customer.creditDays ?? 0);
+    const currentReceivablePaise = Number(customer.currentReceivablePaise ?? 0);
+    const isActive = customer.isActive !== false ? 1 : 0;
+
     await this.db
       .prepare(
         `INSERT INTO customers (
@@ -55,18 +68,18 @@ export class CustomerRepository implements ICustomerRepository {
       )
       .bind(
         customer.id,
-        customer.name.trim(),
-        customer.companyName || null,
-        customer.phone.trim(),
-        customer.email || null,
-        customer.gstin || null,
-        customer.pan || null,
-        customer.billingAddress.trim(),
-        customer.shippingAddress || null,
-        customer.creditLimitPaise,
-        customer.creditDays,
-        customer.currentReceivablePaise,
-        customer.isActive ? 1 : 0,
+        name,
+        companyName,
+        phone,
+        email,
+        gstin,
+        pan,
+        billingAddress,
+        shippingAddress,
+        creditLimitPaise,
+        creditDays,
+        currentReceivablePaise,
+        isActive,
         now,
         now
       )
@@ -74,6 +87,18 @@ export class CustomerRepository implements ICustomerRepository {
 
     return {
       ...customer,
+      name,
+      companyName: companyName || undefined,
+      phone: phone || '',
+      email: email || undefined,
+      gstin: gstin || undefined,
+      pan: pan || undefined,
+      billingAddress: billingAddress || '',
+      shippingAddress: shippingAddress || undefined,
+      creditLimitPaise,
+      creditDays,
+      currentReceivablePaise,
+      isActive: Boolean(isActive),
       createdAt: now,
       updatedAt: now,
     };

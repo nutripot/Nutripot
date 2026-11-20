@@ -47,6 +47,21 @@ export class SupplierRepository implements ISupplierRepository {
 
   async create(supplier: Omit<Supplier, 'createdAt' | 'updatedAt'>): Promise<Supplier> {
     const now = new Date().toISOString();
+    const name = (supplier.name || '').trim();
+    const contactPerson = supplier.contactPerson ? supplier.contactPerson.trim() : null;
+    const phone = supplier.phone ? supplier.phone.trim() : null;
+    const email = supplier.email ? supplier.email.trim() : null;
+    const gstin = supplier.gstin ? supplier.gstin.trim() : null;
+    const pan = supplier.pan ? supplier.pan.trim() : null;
+    const billingAddress = supplier.billingAddress ? supplier.billingAddress.trim() : null;
+    const paymentTermsDays = Number(supplier.paymentTermsDays ?? 30);
+    const bankAccountName = supplier.bankAccountName ? supplier.bankAccountName.trim() : null;
+    const bankAccountNumber = supplier.bankAccountNumber ? supplier.bankAccountNumber.trim() : null;
+    const bankIfsc = supplier.bankIfsc ? supplier.bankIfsc.trim() : null;
+    const bankName = supplier.bankName ? supplier.bankName.trim() : null;
+    const currentPayablePaise = Number(supplier.currentPayablePaise ?? 0);
+    const isActive = supplier.isActive !== false ? 1 : 0;
+
     await this.db
       .prepare(
         `INSERT INTO suppliers (
@@ -58,20 +73,20 @@ export class SupplierRepository implements ISupplierRepository {
       )
       .bind(
         supplier.id,
-        supplier.name.trim(),
-        supplier.contactPerson || null,
-        supplier.phone.trim(),
-        supplier.email || null,
-        supplier.gstin || null,
-        supplier.pan || null,
-        supplier.billingAddress.trim(),
-        supplier.paymentTermsDays,
-        supplier.bankAccountName || null,
-        supplier.bankAccountNumber || null,
-        supplier.bankIfsc || null,
-        supplier.bankName || null,
-        supplier.currentPayablePaise,
-        supplier.isActive ? 1 : 0,
+        name,
+        contactPerson,
+        phone,
+        email,
+        gstin,
+        pan,
+        billingAddress,
+        paymentTermsDays,
+        bankAccountName,
+        bankAccountNumber,
+        bankIfsc,
+        bankName,
+        currentPayablePaise,
+        isActive,
         now,
         now
       )
@@ -79,6 +94,20 @@ export class SupplierRepository implements ISupplierRepository {
 
     return {
       ...supplier,
+      name,
+      contactPerson: contactPerson || undefined,
+      phone: phone || '',
+      email: email || undefined,
+      gstin: gstin || undefined,
+      pan: pan || undefined,
+      billingAddress: billingAddress || '',
+      paymentTermsDays,
+      bankAccountName: bankAccountName || undefined,
+      bankAccountNumber: bankAccountNumber || undefined,
+      bankIfsc: bankIfsc || undefined,
+      bankName: bankName || undefined,
+      currentPayablePaise,
+      isActive: Boolean(isActive),
       createdAt: now,
       updatedAt: now,
     };

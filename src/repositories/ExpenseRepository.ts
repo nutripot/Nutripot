@@ -54,6 +54,12 @@ export class ExpenseRepository implements IExpenseRepository {
 
   async create(expense: Omit<Expense, 'createdAt'>): Promise<Expense> {
     const now = new Date().toISOString();
+    const paymentAccount = expense.paymentAccount ? expense.paymentAccount.trim() : 'DEFAULT';
+    const payeeName = (expense.payeeName || 'Vendor').trim();
+    const description = (expense.description || '').trim();
+    const taxDeductionPaise = Number(expense.taxDeductionPaise ?? 0);
+    const amountPaise = Number(expense.amountPaise ?? 0);
+
     await this.db
       .prepare(
         `INSERT INTO expenses (
@@ -65,15 +71,15 @@ export class ExpenseRepository implements IExpenseRepository {
       .bind(
         expense.id,
         expense.voucherNumber,
-        expense.categoryId,
+        expense.categoryId || 'exp_misc',
         expense.expenseDate,
-        expense.amountPaise,
-        expense.paymentMode,
-        expense.paymentAccount,
-        expense.payeeName,
-        expense.description,
+        amountPaise,
+        expense.paymentMode || 'BANK',
+        paymentAccount,
+        payeeName,
+        description,
         expense.receiptR2Key || null,
-        expense.taxDeductionPaise,
+        taxDeductionPaise,
         null,
         now,
         expense.createdBy
@@ -82,6 +88,11 @@ export class ExpenseRepository implements IExpenseRepository {
 
     return {
       ...expense,
+      amountPaise,
+      paymentAccount,
+      payeeName,
+      description,
+      taxDeductionPaise,
       createdAt: now,
     };
   }
