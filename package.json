@@ -4,7 +4,7 @@
   "description": "Enterprise-grade Business Management System on Cloudflare Workers, D1, and R2",
   "private": true,
   "scripts": {
-    "test": "python tests/test_migrations.py && python tests/test_financial_math.py",
+    "test": "python tests/test_migrations.py && python tests/test_financial_math.py && python tests/test_e2e_api.py",
     "typecheck": "tsc --noEmit",
     "dev": "vite",
     "build": "vite build",
