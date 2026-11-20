@@ -123,25 +123,34 @@ export class InventoryRepository implements IInventoryRepository {
     }));
   }
 
-  async listAllBalances(): Promise<Array<InventoryBalance & { sku: string; name: string }>> {
+  async listAllBalances(): Promise<Array<InventoryBalance & { sku: string; name: string; uom: string; currentStock: number; reorderLevel: number; weightedAverageCostPaise: number; totalValuationPaise: number }>> {
     const rows = await this.db
       .prepare(
         `SELECT b.product_id, b.current_stock_milli_units, b.weighted_avg_cost_paise, b.last_updated_at,
-                p.sku, p.name
-         FROM inventory_balances b
-         JOIN products p ON b.product_id = p.id
+                p.sku, p.name, p.uom, p.min_stock_alert_level
+         FROM products p
+         LEFT JOIN inventory_balances b ON b.product_id = p.id
          WHERE p.is_active = 1
          ORDER BY p.name ASC`
       )
       .all<any>();
 
-    return (rows.results || []).map(r => ({
-      productId: r.product_id,
-      currentStockMilliUnits: r.current_stock_milli_units,
-      weightedAvgCostPaise: r.weighted_avg_cost_paise,
-      lastUpdatedAt: r.last_updated_at,
-      sku: r.sku,
-      name: r.name,
-    }));
+    return (rows.results || []).map(r => {
+      const stock = r.current_stock_milli_units || 0;
+      const wac = r.weighted_avg_cost_paise || 0;
+      return {
+        productId: r.product_id || '',
+        currentStockMilliUnits: stock,
+        currentStock: stock,
+        weightedAvgCostPaise: wac,
+        weightedAverageCostPaise: wac,
+        totalValuationPaise: Math.round((stock * wac) / 1000),
+        lastUpdatedAt: r.last_updated_at || '',
+        sku: r.sku,
+        name: r.name,
+        uom: r.uom,
+        reorderLevel: r.min_stock_alert_level || 0,
+      };
+    });
   }
 }

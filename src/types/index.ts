@@ -391,7 +391,7 @@ export interface IInventoryRepository {
   recordMovement(movement: Omit<InventoryMovement, 'createdAt'>): Promise<InventoryMovement>;
   updateBalance(productId: string, stockChangeMilli: number, newWacPaise?: number): Promise<InventoryBalance>;
   listMovements(productId: string, limit?: number): Promise<InventoryMovement[]>;
-  listAllBalances(): Promise<Array<InventoryBalance & { sku: string; name: string }>>;
+  listAllBalances(): Promise<Array<InventoryBalance & { sku: string; name: string; [key: string]: any }>>;
 }
 
 export interface IPurchaseRepository {

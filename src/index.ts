@@ -99,7 +99,7 @@ router.post('/api/v1/auth/login', async (ctx: RouteContext) => {
   const result = await authService.login(body.email, body.password, ip, ua);
 
   // Set-Cookie header with HttpOnly, Secure, SameSite=Strict
-  const cookieVal = `session_token=${result.token}; Path=/api; HttpOnly; Secure; SameSite=Strict; Max-Age=604800`;
+  const cookieVal = `session_token=${result.token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=604800`;
   return jsonResponse({ success: true, data: result.user }, 200, { 'Set-Cookie': cookieVal });
 });
 
@@ -113,7 +113,7 @@ router.post('/api/v1/auth/logout', async (ctx: RouteContext) => {
     await authService.logout(token);
   }
 
-  const cookieVal = `session_token=; Path=/api; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
+  const cookieVal = `session_token=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
   return jsonResponse({ success: true, data: { message: 'Logged out successfully' } }, 200, { 'Set-Cookie': cookieVal });
 }, requireAuth);
 
@@ -197,6 +197,13 @@ router.get('/api/v1/inventory/:productId/movements', async (ctx: RouteContext) =
   return jsonResponse({ success: true, data: movements });
 }, requireAuth);
 
+router.get('/api/v1/inventory/low-stock', async (ctx: RouteContext) => {
+  const invRepo = new InventoryRepository(ctx.env.DB);
+  const balances = await invRepo.listAllBalances();
+  const lowStock = balances.filter(b => b.currentStock <= b.reorderLevel);
+  return jsonResponse({ success: true, data: lowStock });
+}, requireAuth);
+
 router.post('/api/v1/inventory/adjust', async (ctx: RouteContext) => {
   const body = await ctx.request.json<any>();
   const invRepo = new InventoryRepository(ctx.env.DB);
@@ -206,11 +213,30 @@ router.post('/api/v1/inventory/adjust', async (ctx: RouteContext) => {
   return jsonResponse({ success: true, data: { message: 'Stock adjusted successfully' } });
 }, requireAuth);
 
+router.post('/api/v1/inventory/adjustments', async (ctx: RouteContext) => {
+  const body = await ctx.request.json<any>();
+  const invRepo = new InventoryRepository(ctx.env.DB);
+  const invService = new InventoryService(invRepo);
+
+  const type = body.movementType === 'ADJUSTMENT_ADD' ? 'ADD' : 'SUB';
+  await invService.adjustStock(body.productId, body.quantityMilliUnits, type, body.reason || 'Manual adjustment', ctx.userId!);
+  return jsonResponse({ success: true, data: { message: 'Stock adjusted successfully' } });
+}, requireAuth);
+
 // --- 7. PURCHASING & SUPPLIERS ENDPOINTS ---
 router.get('/api/v1/suppliers', async (ctx: RouteContext) => {
   const suppRepo = new SupplierRepository(ctx.env.DB);
   const suppliers = await suppRepo.list({});
   return jsonResponse({ success: true, data: suppliers });
+}, requireAuth);
+
+router.get('/api/v1/suppliers/:id', async (ctx: RouteContext) => {
+  const suppRepo = new SupplierRepository(ctx.env.DB);
+  const supplier = await suppRepo.findById(ctx.params.id);
+  if (!supplier) {
+    return jsonResponse({ success: false, error: { code: 'NOT_FOUND', message: 'Supplier not found' } }, 404);
+  }
+  return jsonResponse({ success: true, data: supplier });
 }, requireAuth);
 
 router.post('/api/v1/suppliers', async (ctx: RouteContext) => {
@@ -248,7 +274,9 @@ router.post('/api/v1/purchases', async (ctx: RouteContext) => {
   const invService = new InventoryService(invRepo);
   const purchService = new PurchaseService(purchRepo, invService, suppRepo, auditRepo);
 
-  const created = await purchService.createBill(body.bill, body.items, ctx.userId!);
+  const billData = body.bill || body;
+  const itemsData = body.items || body.bill?.items || [];
+  const created = await purchService.createBill(billData, itemsData, ctx.userId!);
   return jsonResponse({ success: true, data: created }, 201);
 }, requireAuth);
 
@@ -269,6 +297,15 @@ router.get('/api/v1/customers', async (ctx: RouteContext) => {
   const custRepo = new CustomerRepository(ctx.env.DB);
   const customers = await custRepo.list({});
   return jsonResponse({ success: true, data: customers });
+}, requireAuth);
+
+router.get('/api/v1/customers/:id', async (ctx: RouteContext) => {
+  const custRepo = new CustomerRepository(ctx.env.DB);
+  const customer = await custRepo.findById(ctx.params.id);
+  if (!customer) {
+    return jsonResponse({ success: false, error: { code: 'NOT_FOUND', message: 'Customer not found' } }, 404);
+  }
+  return jsonResponse({ success: true, data: customer });
 }, requireAuth);
 
 router.post('/api/v1/customers', async (ctx: RouteContext) => {
@@ -307,7 +344,9 @@ router.post('/api/v1/sales', async (ctx: RouteContext) => {
   const invService = new InventoryService(invRepo);
   const salesService = new SalesService(salesRepo, invService, custRepo, settingsRepo, auditRepo);
 
-  const created = await salesService.createInvoice(body.invoice, body.items, ctx.userId!);
+  const invoiceData = body.invoice || body;
+  const itemsData = body.items || body.invoice?.items || [];
+  const created = await salesService.createInvoice(invoiceData, itemsData, ctx.userId!);
   return jsonResponse({ success: true, data: created }, 201);
 }, requireAuth);
 
@@ -339,7 +378,9 @@ router.post('/api/v1/collections', async (ctx: RouteContext) => {
   const auditRepo = new AuditRepository(ctx.env.DB);
   const collService = new CollectionService(collRepo, salesRepo, custRepo, auditRepo);
 
-  const created = await collService.recordCollection(body.collection, body.allocations, ctx.userId!);
+  const collData = body.collection || body;
+  const allocData = body.allocations || [];
+  const created = await collService.recordCollection(collData, allocData, ctx.userId!);
   return jsonResponse({ success: true, data: created }, 201);
 }, requireAuth);
 
