@@ -10,7 +10,7 @@ export const LoginPage: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('admin@nutripot.com');
+  const [email, setEmail] = useState('innovativeden0@gmail.com');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -120,7 +120,7 @@ export const LoginPage: React.FC = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@nutripot.com"
+              placeholder="innovativeden0@gmail.com"
             />
           </FormField>
 

@@ -3,16 +3,16 @@
 -- Dialect: Cloudflare D1 (SQLite)
 
 -- 1. INITIAL SYSTEM OWNER
--- Email: admin@businesshub.local
--- Temporary bootstrap password: 'ChangeMeAdmin2026!'
+-- Email: innovativeden0@gmail.com
+-- Temporary bootstrap password: 'ASDf@123'
 -- Salt: 16-byte base64 salt: 'YnVzaW5lc3NodWJzYWx0'
--- Derived PBKDF2-SHA256 (100,000 iters): '7c9e7c1494b2684ab7c19d6e806da3e4ec80e641b00f6014c4300061fcd82120'
+-- Derived PBKDF2-SHA256 (100,000 iters): '26b30b2117f004ac1985f1783e144b423038d652e9eb6411d4a0c22c0fa812e2'
 INSERT OR IGNORE INTO users (
     id, email, password_hash, password_salt, full_name, role, is_active, created_at, updated_at
 ) VALUES (
     'usr_bootstrap_owner',
-    'admin@businesshub.local',
-    '7c9e7c1494b2684ab7c19d6e806da3e4ec80e641b00f6014c4300061fcd82120',
+    'innovativeden0@gmail.com',
+    '26b30b2117f004ac1985f1783e144b423038d652e9eb6411d4a0c22c0fa812e2',
     'YnVzaW5lc3NodWJzYWx0',
     'System Administrator',
     'OWNER',
