@@ -108,7 +108,7 @@ export class PurchaseRepository implements IPurchaseRepository {
     }));
   }
 
-  async create(bill: Omit<PurchaseBill, 'createdAt' | 'updatedAt'>, items: Omit<PurchaseBillItem, 'id'>[]): Promise<PurchaseBill> {
+  async create(bill: Omit<PurchaseBill, 'createdAt' | 'updatedAt'>, items: Omit<PurchaseBillItem, 'id' | 'purchaseBillId'>[]): Promise<PurchaseBill> {
     const now = new Date().toISOString();
 
     const statements: D1PreparedStatement[] = [
@@ -165,7 +165,7 @@ export class PurchaseRepository implements IPurchaseRepository {
             item.totalAmountPaise
           )
       );
-      createdItems.push({ ...item, id: itemId });
+      createdItems.push({ ...item, id: itemId, purchaseBillId: bill.id });
     }
 
     await this.db.batch(statements);

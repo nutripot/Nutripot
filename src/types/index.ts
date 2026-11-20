@@ -26,6 +26,22 @@ export type SalesInvoiceStatus = 'DRAFT' | 'ISSUED' | 'PARTIALLY_PAID' | 'PAID' 
 
 export type PaymentMode = 'CASH' | 'BANK_TRANSFER' | 'UPI' | 'CHEQUE' | 'CARD' | 'CORPORATE_CARD';
 
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+    details?: any;
+  };
+  meta?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    offset?: number;
+  };
+}
+
 // --- 2. CORE DOMAIN ENTITIES ---
 
 export interface User {
@@ -68,8 +84,10 @@ export interface Product {
   hsnCode: string;
   taxRateBps: TaxRateBps;
   costPricePaise: number;
+  purchasePricePaise?: number;
   sellingPricePaise: number;
   minStockAlertLevel: number;
+  reorderLevel?: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -104,6 +122,7 @@ export interface Supplier {
   email?: string;
   gstin?: string;
   pan?: string;
+  stateCode?: string;
   billingAddress: string;
   paymentTermsDays: number;
   bankAccountName?: string;
@@ -111,6 +130,7 @@ export interface Supplier {
   bankIfsc?: string;
   bankName?: string;
   currentPayablePaise: number;
+  currentBalancePaise?: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -121,11 +141,14 @@ export interface SupplierLedgerEntry {
   supplierId: string;
   entryDate: string;
   entryType: 'PURCHASE_BILL' | 'PAYMENT_DISBURSEMENT' | 'DEBIT_NOTE' | 'OPENING_BALANCE';
+  transactionType?: string;
   referenceId: string;
   referenceNumber: string;
   debitPaise: number;
   creditPaise: number;
   runningBalancePaise: number;
+  balanceAfterPaise?: number;
+  description?: string;
   notes?: string;
   createdAt: string;
   createdBy: string;
@@ -148,11 +171,14 @@ export interface PurchaseBill {
   billNumber: string;
   supplierId: string;
   supplierBillNumber: string;
+  supplierInvoiceNumber?: string;
   billDate: string;
   dueDate: string;
   status: PurchaseBillStatus;
   subtotalPaise: number;
+  taxableAmountPaise?: number;
   taxAmountPaise: number;
+  totalTaxPaise?: number;
   shippingChargesPaise: number;
   totalAmountPaise: number;
   paidAmountPaise: number;
@@ -168,15 +194,18 @@ export interface Customer {
   id: string;
   name: string;
   companyName?: string;
+  contactPerson?: string;
   phone: string;
   email?: string;
   gstin?: string;
   pan?: string;
+  stateCode?: string;
   billingAddress: string;
   shippingAddress?: string;
   creditLimitPaise: number;
   creditDays: number;
   currentReceivablePaise: number;
+  currentBalancePaise?: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -187,11 +216,14 @@ export interface CustomerLedgerEntry {
   customerId: string;
   entryDate: string;
   entryType: 'SALES_INVOICE' | 'COLLECTION_RECEIPT' | 'CREDIT_NOTE' | 'OPENING_BALANCE';
+  transactionType?: string;
   referenceId: string;
   referenceNumber: string;
   debitPaise: number;
   creditPaise: number;
   runningBalancePaise: number;
+  balanceAfterPaise?: number;
+  description?: string;
   notes?: string;
   createdAt: string;
   createdBy: string;
@@ -220,6 +252,7 @@ export interface SalesInvoice {
   placeOfSupply: string;
   status: SalesInvoiceStatus;
   subtotalPaise: number;
+  taxableAmountPaise?: number;
   cgstPaise: number;
   sgstPaise: number;
   igstPaise: number;
@@ -273,15 +306,19 @@ export interface Expense {
   categoryId: string;
   expenseDate: string;
   amountPaise: number;
+  taxAmountPaise?: number;
   paymentMode: PaymentMode;
   paymentAccount: string;
   payeeName: string;
+  vendorName?: string;
   description: string;
   receiptR2Key?: string;
   taxDeductionPaise: number;
   createdAt: string;
   createdBy: string;
 }
+
+export type CollectionReceipt = Collection;
 
 export interface Settings {
   id: string;
@@ -291,6 +328,7 @@ export interface Settings {
   pan: string;
   stateCode: string;
   stateName: string;
+  address?: string;
   addressLine1: string;
   addressLine2?: string;
   city: string;
@@ -313,6 +351,8 @@ export interface Settings {
   updatedAt: string;
   updatedBy: string;
 }
+
+export type CompanySettings = Settings;
 
 export interface AuditLog {
   id: string;
@@ -357,14 +397,14 @@ export interface IInventoryRepository {
 export interface IPurchaseRepository {
   findById(id: string): Promise<PurchaseBill | null>;
   list(params: { supplierId?: string; status?: PurchaseBillStatus; limit?: number; offset?: number }): Promise<PurchaseBill[]>;
-  create(bill: Omit<PurchaseBill, 'createdAt' | 'updatedAt'>, items: Omit<PurchaseBillItem, 'id'>[]): Promise<PurchaseBill>;
+  create(bill: Omit<PurchaseBill, 'createdAt' | 'updatedAt'>, items: Omit<PurchaseBillItem, 'id' | 'purchaseBillId'>[]): Promise<PurchaseBill>;
   updateStatus(id: string, status: PurchaseBillStatus): Promise<void>;
 }
 
 export interface ISalesRepository {
   findById(id: string): Promise<SalesInvoice | null>;
   list(params: { customerId?: string; status?: SalesInvoiceStatus; limit?: number; offset?: number }): Promise<SalesInvoice[]>;
-  create(invoice: Omit<SalesInvoice, 'createdAt' | 'updatedAt'>, items: Omit<SalesInvoiceItem, 'id'>[]): Promise<SalesInvoice>;
+  create(invoice: Omit<SalesInvoice, 'createdAt' | 'updatedAt'>, items: Omit<SalesInvoiceItem, 'id' | 'salesInvoiceId'>[]): Promise<SalesInvoice>;
   updateStatus(id: string, status: SalesInvoiceStatus, paidPaise?: number): Promise<void>;
 }
 

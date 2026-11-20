@@ -31,6 +31,9 @@ export function formatPaiseToRupees(paise: number): string {
   return `${sign}₹${formattedRupees}.${formattedPaise}`;
 }
 
+export const formatPaiseToInr = formatPaiseToRupees;
+export const calculateGstSplit = calculateGstTax;
+
 /**
  * Converts a decimal rupee string or number to integer paise with exact rounding.
  * Example: 154.50 -> 15450

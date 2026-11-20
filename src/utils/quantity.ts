@@ -30,3 +30,5 @@ export function formatQuantity(milliUnits: number, uom?: string): string {
   const formatted = parseFloat(units.toFixed(3)).toString();
   return uom ? `${formatted} ${uom}` : formatted;
 }
+
+export const formatMilliToUnit = (milliUnits: number): string => formatQuantity(milliUnits);

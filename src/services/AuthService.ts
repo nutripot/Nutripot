@@ -4,7 +4,7 @@
 // ============================================================================
 
 import { IAuthService, IUserRepository, User } from '@/types';
-import { generateSessionToken, hashPassword, hashToken, verifyPassword } from '@/lib/auth';
+import { generateSessionToken, hashToken, verifyPassword } from '@/lib/auth';
 
 export class AuthService implements IAuthService {
   constructor(

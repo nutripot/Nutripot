@@ -116,7 +116,7 @@ export class SalesRepository implements ISalesRepository {
     }));
   }
 
-  async create(invoice: Omit<SalesInvoice, 'createdAt' | 'updatedAt'>, items: Omit<SalesInvoiceItem, 'id'>[]): Promise<SalesInvoice> {
+  async create(invoice: Omit<SalesInvoice, 'createdAt' | 'updatedAt'>, items: Omit<SalesInvoiceItem, 'id' | 'salesInvoiceId'>[]): Promise<SalesInvoice> {
     const now = new Date().toISOString();
 
     const statements: D1PreparedStatement[] = [
@@ -178,7 +178,7 @@ export class SalesRepository implements ISalesRepository {
             item.totalAmountPaise
           )
       );
-      createdItems.push({ ...item, id: itemId });
+      createdItems.push({ ...item, id: itemId, salesInvoiceId: invoice.id });
     }
 
     await this.db.batch(statements);
