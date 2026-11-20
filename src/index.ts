@@ -5,6 +5,16 @@
 
 import { Router, RouteContext, jsonResponse, Env } from '@/lib/router';
 import { parseCookies } from '@/lib/auth';
+import { getAssetFromKV, serveSinglePageApp } from '@cloudflare/kv-asset-handler';
+// @ts-ignore
+import manifestJSON from '__STATIC_CONTENT_MANIFEST';
+
+let assetManifest: any = {};
+try {
+  assetManifest = JSON.parse(manifestJSON);
+} catch {
+  assetManifest = {};
+}
 
 import { UserRepository } from '@/repositories/UserRepository';
 import { ProductRepository } from '@/repositories/ProductRepository';
@@ -432,7 +442,43 @@ router.put('/api/v1/settings', async (ctx: RouteContext) => {
 
 // --- 13. CLOUDFLARE WORKER DEFAULT EXPORT ---
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    return await router.handle(request, env);
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname.startsWith('/api/')) {
+      return await router.handle(request, env);
+    }
+
+    try {
+      return await getAssetFromKV(
+        {
+          request,
+          waitUntil: (promise: Promise<any>) => ctx.waitUntil(promise),
+        },
+        {
+          ASSET_NAMESPACE: (env as any).__STATIC_CONTENT,
+          ASSET_MANIFEST: assetManifest,
+          mapRequestToAsset: serveSinglePageApp,
+        }
+      );
+    } catch (e: any) {
+      if (url.pathname === '/' || !url.pathname.includes('.')) {
+        try {
+          const indexRequest = new Request(new URL('/', request.url), request);
+          return await getAssetFromKV(
+            {
+              request: indexRequest,
+              waitUntil: (promise: Promise<any>) => ctx.waitUntil(promise),
+            },
+            {
+              ASSET_NAMESPACE: (env as any).__STATIC_CONTENT,
+              ASSET_MANIFEST: assetManifest,
+            }
+          );
+        } catch {
+          // fall through
+        }
+      }
+      return new Response(`Asset Not Found: ${url.pathname}`, { status: 404 });
+    }
   },
 };
