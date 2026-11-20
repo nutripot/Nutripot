@@ -9,7 +9,7 @@ import { CompanySettings } from '../../types';
 
 export const SettingsPage: React.FC = () => {
   const [, setSettings] = useState<CompanySettings | null>(null);
-  const [companyName, setCompanyName] = useState('Nutripot Enterprise');
+  const [companyName, setCompanyName] = useState('SS Nutripot');
   const [gstin, setGstin] = useState('');
   const [pan, setPan] = useState('');
   const [stateCode, setStateCode] = useState('33');
@@ -79,7 +79,7 @@ export const SettingsPage: React.FC = () => {
         throw new Error(json.error?.message || 'Failed to update company settings');
       }
 
-      setSuccessMsg('Company configuration successfully committed to Cloudflare D1.');
+      setSuccessMsg('Settings saved successfully.');
     } catch (err: any) {
       setErrorMsg(err.message || 'Settings update failed');
     } finally {
@@ -88,14 +88,14 @@ export const SettingsPage: React.FC = () => {
   };
 
   if (isLoading) {
-    return <LoadingSpinner size="lg" label="Loading organizational parameters..." />;
+    return <LoadingSpinner size="lg" label="Loading settings..." />;
   }
 
   return (
     <div>
       <PageHeader
-        title="Organization Settings & Statutory Master"
-        subtitle="Manage legal entity identity, GST registration, and bank mandate"
+        title="Settings"
+        subtitle="Manage company profile, GST registration, and bank details"
       />
 
       <div

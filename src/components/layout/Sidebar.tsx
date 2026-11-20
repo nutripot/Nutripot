@@ -146,46 +146,52 @@ export const Sidebar: React.FC = () => {
       {/* Brand Header */}
       <div
         style={{
-          padding: `${tokens.spacing[5]} ${tokens.spacing[4]}`,
+          padding: `${tokens.spacing[4]} ${tokens.spacing[4]}`,
           borderBottom: `1px solid ${tokens.colors.slate[800]}`,
         }}
       >
         <div
           style={{
-            fontSize: tokens.typography.fontSize.lg,
-            fontWeight: tokens.typography.fontWeight.bold,
-            letterSpacing: '-0.02em',
-            color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
-            gap: tokens.spacing[2],
+            gap: tokens.spacing[3],
           }}
         >
-          <div
+          <img
+            src="/logo.png"
+            alt="SS Nutripot"
             style={{
-              width: '26px',
-              height: '26px',
-              borderRadius: tokens.borderRadius.sm,
-              backgroundColor: tokens.colors.primary[600],
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: '14px',
+              width: '40px',
+              height: '40px',
+              objectFit: 'contain',
+              borderRadius: '50%',
+              backgroundColor: '#ffffff',
+              padding: '2px',
+              boxShadow: tokens.shadows.sm,
             }}
-          >
-            B
+          />
+          <div>
+            <div
+              style={{
+                fontSize: tokens.typography.fontSize.base,
+                fontWeight: tokens.typography.fontWeight.bold,
+                letterSpacing: '0.02em',
+                color: '#ffffff',
+                lineHeight: 1.2,
+              }}
+            >
+              SS NUTRIPOT
+            </div>
+            <div
+              style={{
+                fontSize: tokens.typography.fontSize.xs,
+                color: tokens.colors.primary[200],
+                marginTop: '2px',
+              }}
+            >
+              Natural Nutrition
+            </div>
           </div>
-          BusinessHub
-        </div>
-        <div
-          style={{
-            fontSize: tokens.typography.fontSize.xs,
-            color: tokens.colors.slate[400],
-            marginTop: tokens.spacing[1],
-          }}
-        >
-          Enterprise System
         </div>
       </div>
 

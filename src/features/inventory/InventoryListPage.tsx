@@ -99,8 +99,8 @@ export const InventoryListPage: React.FC = () => {
   return (
     <div>
       <PageHeader
-        title="Inventory Valuation & Stock Balances"
-        subtitle="Real-time stock ledger calculated using Weighted Average Cost (WAC)"
+        title="Inventory"
+        subtitle="Current stock levels and inventory valuation"
         actionLabel="Adjust Stock"
         onAction={() => navigate('/inventory/adjust')}
       />

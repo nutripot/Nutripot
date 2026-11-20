@@ -58,32 +58,27 @@ export const LoginPage: React.FC = () => {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: tokens.spacing[6] }}>
-          <div
+          <img
+            src="/logo.png"
+            alt="SS Nutripot"
             style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: tokens.borderRadius.md,
-              backgroundColor: tokens.colors.primary[600],
-              color: '#ffffff',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: tokens.typography.fontSize.xl,
+              width: '120px',
+              height: '120px',
+              objectFit: 'contain',
               marginBottom: tokens.spacing[3],
+              borderRadius: tokens.borderRadius.lg,
             }}
-          >
-            B
-          </div>
+          />
           <h1
             style={{
               margin: 0,
-              fontSize: tokens.typography.fontSize.xl,
+              fontSize: tokens.typography.fontSize['2xl'],
               fontWeight: tokens.typography.fontWeight.bold,
-              color: tokens.colors.slate[900],
+              color: tokens.colors.primary[700],
+              letterSpacing: '0.04em',
             }}
           >
-            BusinessHub Enterprise
+            SS NUTRIPOT
           </h1>
           <p
             style={{
@@ -92,7 +87,7 @@ export const LoginPage: React.FC = () => {
               color: tokens.colors.slate[500],
             }}
           >
-            Sign in with authorized administrator credentials
+            Welcome to your management portal
           </p>
         </div>
 
@@ -124,7 +119,7 @@ export const LoginPage: React.FC = () => {
             />
           </FormField>
 
-          <FormField id="password" label="Master Password" required>
+          <FormField id="password" label="Password" required>
             <TextInput
               id="password"
               type="password"
@@ -142,7 +137,7 @@ export const LoginPage: React.FC = () => {
             isLoading={isLoading}
             style={{ width: '100%', marginTop: tokens.spacing[2] }}
           >
-            Sign In to Enterprise Workspace
+            Sign In
           </Button>
         </form>
 
@@ -150,13 +145,13 @@ export const LoginPage: React.FC = () => {
           style={{
             marginTop: tokens.spacing[6],
             paddingTop: tokens.spacing[4],
-            borderTop: `1px solid ${tokens.colors.slate[100]}`,
+            borderTop: `1px solid ${tokens.colors.slate[200]}`,
             textAlign: 'center',
             fontSize: tokens.typography.fontSize.xs,
             color: tokens.colors.slate[400],
           }}
         >
-          Protected by Cloudflare Edge & PBKDF2-SHA256 Cryptography
+          © 2026 SS Nutripot. All rights reserved.
         </div>
       </div>
     </div>

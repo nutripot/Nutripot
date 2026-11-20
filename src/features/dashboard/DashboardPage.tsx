@@ -76,7 +76,7 @@ export const DashboardPage: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    return <LoadingSpinner size="lg" label="Compiling executive dashboard..." />;
+    return <LoadingSpinner size="lg" label="Loading dashboard..." />;
   }
 
   const columns: Column<LowStockItem>[] = [
@@ -110,8 +110,8 @@ export const DashboardPage: React.FC = () => {
   return (
     <div>
       <PageHeader
-        title="Executive Dashboard"
-        subtitle="Real-time financial position, working capital, and operational status"
+        title="Dashboard"
+        subtitle="Overview of operations, sales, and inventory"
         actionLabel="Create Invoice"
         onAction={() => navigate('/sales/create')}
         secondaryActionLabel="Record Purchase"
@@ -185,7 +185,7 @@ export const DashboardPage: React.FC = () => {
             Quick Operations
           </div>
           <div style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.slate[500] }}>
-            Execute transactional workflows with strict ledger validation
+            Frequently used business actions
           </div>
         </div>
 

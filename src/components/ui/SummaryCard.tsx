@@ -4,6 +4,7 @@
 // ============================================================================
 
 import React from 'react';
+import { tokens } from '../../styles/tokens';
 
 interface SummaryCardProps {
   title: string;
@@ -23,32 +24,32 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   variant = 'default',
 }) => {
   const accentBorder = {
-    default: '#2563eb', // Precision Cobalt
-    primary: '#2563eb',
-    success: '#059669', // Emerald
-    warning: '#d97706', // Amber
-    danger: '#e11d48',  // Crimson
+    default: tokens.colors.primary[600],
+    primary: tokens.colors.primary[600],
+    success: tokens.colors.success[600],
+    warning: tokens.colors.warning[600],
+    danger: tokens.colors.danger[600],
   }[variant];
 
   return (
     <div
       style={{
         backgroundColor: '#ffffff',
-        borderRadius: '8px',
+        borderRadius: tokens.borderRadius.lg,
         padding: '20px',
-        border: '1px solid #e2e8f0',
+        border: `1px solid ${tokens.colors.slate[200]}`,
         borderTop: `4px solid ${accentBorder}`,
-        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05)',
+        boxShadow: tokens.shadows.sm,
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
       }}
     >
-      <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+      <div style={{ fontSize: '0.875rem', fontWeight: 600, color: tokens.colors.slate[500], textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         {title}
       </div>
 
-      <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+      <div style={{ fontSize: '1.75rem', fontWeight: 700, color: tokens.colors.slate[800], letterSpacing: '-0.02em' }}>
         {value}
       </div>
 

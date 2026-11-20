@@ -42,7 +42,7 @@ export const ReportsPage: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    return <LoadingSpinner size="lg" label="Computing statutory financial statement..." />;
+    return <LoadingSpinner size="lg" label="Loading financial reports..." />;
   }
 
   const pnl = pnlData || {
@@ -60,8 +60,8 @@ export const ReportsPage: React.FC = () => {
   return (
     <div>
       <PageHeader
-        title="Financial Reporting & Statutory Intelligence"
-        subtitle="Accrual-basis profit & loss statements, GST compliance summaries, and liquidity aging"
+        title="Financial Reports"
+        subtitle="Profit & loss, GST tax summaries, and aging analysis"
       />
 
       {/* Report Tab Selector */}
@@ -238,10 +238,10 @@ export const ReportsPage: React.FC = () => {
           }}
         >
           <h3 style={{ margin: `0 0 ${tokens.spacing[2]}`, fontSize: tokens.typography.fontSize.base }}>
-            Statutory Goods & Services Tax (GST) Liability & Input Tax Credit
+            Goods & Services Tax (GST) Summary
           </h3>
           <p style={{ color: tokens.colors.slate[500], fontSize: tokens.typography.fontSize.xs, marginBottom: tokens.spacing[6] }}>
-            Compiled from verified Sales Invoices (Table 4 & 5 Outward Supply) and confirmed Purchase Bills (Table 4 Eligible ITC).
+            Compiled from verified Sales Invoices and confirmed Purchase Bills.
           </p>
 
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: tokens.typography.fontSize.sm }}>
@@ -273,7 +273,7 @@ export const ReportsPage: React.FC = () => {
                 <td style={{ padding: tokens.spacing[2], fontWeight: 600 }}>₹0.00</td>
               </tr>
               <tr style={{ fontWeight: 'bold', borderTop: `2px solid ${tokens.colors.slate[300]}` }}>
-                <td style={{ padding: tokens.spacing[3] }}>Total Net Statutory Tax</td>
+                <td style={{ padding: tokens.spacing[3] }}>Total Net Tax</td>
                 <td style={{ padding: tokens.spacing[3] }}>₹0.00</td>
                 <td style={{ padding: tokens.spacing[3] }}>₹0.00</td>
                 <td style={{ padding: tokens.spacing[3], color: tokens.colors.primary[600] }}>₹0.00</td>

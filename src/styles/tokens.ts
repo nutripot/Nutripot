@@ -1,56 +1,58 @@
 // ============================================================================
-// BusinessHub Enterprise - Centralized Design Tokens
-// Standards: No emojis, no decorative UI, high-contrast accessible design
+// SS Nutripot - Design Tokens
+// Warm organic palette inspired by SS Nutripot terracotta pot & grain logo
 // ============================================================================
 
 export const tokens = {
   colors: {
-    // Brand & Primary
+    // Brand & Primary (Warm Terracotta & Rich Earthen Brown)
     primary: {
-      50: '#eff6ff',
-      100: '#dbeafe',
-      500: '#3b82f6',
-      600: '#2563eb', // Precision Cobalt
-      700: '#1d4ed8',
-      900: '#1e3a8a',
+      50: '#FBF7F3',   // Cashew cream
+      100: '#F4ECE4',  // Toasted almond
+      200: '#E6D5C5',  // Almond latte
+      500: '#9E5326',  // Roasted hazelnut
+      600: '#7A3B1C',  // Signature Pot Terracotta (Primary Button & Nav)
+      700: '#5C2C16',  // Deep Terracotta (Active / Brand)
+      800: '#46200F',  // Dark Roast
+      900: '#321509',  // Deep Espresso
     },
-    // Neutrals & Surface
+    // Neutrals & Surface (Warm Stone & Earthen Slate)
     slate: {
-      50: '#f8fafc',
-      100: '#f1f5f9',
-      200: '#e2e8f0',
-      300: '#cbd5e1',
-      400: '#94a3b8',
-      500: '#64748b',
-      600: '#475569',
-      700: '#334155',
-      800: '#1e293b',
-      900: '#0f172a', // Deep Slate Navy
+      50: '#FAF8F5',   // Canvas background
+      100: '#F2ECE5',  // Input / light card surface
+      200: '#E4DAD0',  // Borders & Dividers
+      300: '#D0C2B4',  // Accent border
+      400: '#A49384',  // Placeholder text
+      500: '#7A6B5E',  // Muted secondary text
+      600: '#5A4C41',  // Body text
+      700: '#42362E',  // Dark text
+      800: '#2E241E',  // Dark panels
+      900: '#1F1713',  // Sidebar background (Deep Earthen Umber)
     },
     // Semantic Status Colors
     success: {
-      50: '#ecfdf5',
-      100: '#d1fae5',
-      600: '#059669', // Emerald (Collections / Inward Stock / Net Profit)
-      700: '#047857',
+      50: '#F0FDF4',
+      100: '#DCFCE7',
+      600: '#16A34A', // Botanical green
+      700: '#15803D',
     },
     warning: {
-      50: '#fffbeb',
-      100: '#fef3c7',
-      600: '#d97706', // Amber (Pending Invoices / Low Stock Alert)
-      700: '#b45309',
+      50: '#FFFBEB',
+      100: '#FEF3C7',
+      600: '#D97706', // Golden amber
+      700: '#B45309',
     },
     danger: {
-      50: '#fff1f2',
-      100: '#ffe4e6',
-      600: '#e11d48', // Rose / Crimson (Overdue / Expenses / Outward Stock)
-      700: '#be123c',
+      50: '#FEF2F2',
+      100: '#FEE2E2',
+      600: '#DC2626', // Crimson red
+      700: '#B91C1C',
     },
     info: {
-      50: '#f0f9ff',
-      100: '#e0f2fe',
-      600: '#0284c7', // Sky (Quotations / Drafts)
-      700: '#0369a1',
+      50: '#F5F3FF',
+      100: '#EDE9FE',
+      600: '#7C3AED',
+      700: '#6D28D9',
     },
   },
   typography: {

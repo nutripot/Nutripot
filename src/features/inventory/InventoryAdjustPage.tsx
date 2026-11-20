@@ -93,8 +93,8 @@ export const InventoryAdjustPage: React.FC = () => {
   return (
     <div>
       <PageHeader
-        title="Stock Adjustment Entry"
-        subtitle="Record physical count reconciliation or write-offs with immutable ledger logging"
+        title="Stock Adjustment"
+        subtitle="Record physical count reconciliation, damages, or write-offs"
         secondaryActionLabel="Cancel"
         onSecondaryAction={() => navigate('/inventory')}
       />

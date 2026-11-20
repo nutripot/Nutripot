@@ -153,7 +153,7 @@ export const CustomerCreatePage: React.FC = () => {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: tokens.spacing[4] }}>
-            <FormField id="gstin" label="Customer GSTIN (Leave blank for B2C consumer)" hint="15-character statutory GST ID">
+            <FormField id="gstin" label="Customer GSTIN (Leave blank for B2C consumer)" hint="15-character GST identification number">
               <TextInput
                 id="gstin"
                 value={gstin}

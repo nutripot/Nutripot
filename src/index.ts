@@ -76,7 +76,7 @@ router.get('/api/v1/health', async () => {
     success: true,
     data: {
       status: 'healthy',
-      system: 'BusinessHub Enterprise',
+      system: 'SS Nutripot',
       version: '1.0.0',
       timestamp: new Date().toISOString(),
     },

@@ -80,9 +80,9 @@ export const ProductListPage: React.FC = () => {
   return (
     <div>
       <PageHeader
-        title="Product Master"
-        subtitle="SKU catalog with GST tax classifications, pricing structures, and inventory thresholds"
-        actionLabel="Create SKU"
+        title="Products"
+        subtitle="Catalog of products, pricing, and stock thresholds"
+        actionLabel="New Product"
         onAction={() => navigate('/products/create')}
       />
 
