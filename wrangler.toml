@@ -7,18 +7,19 @@ account_id = "15c69d46a3b074b90340d99479d4b542"
 main = "src/index.ts"
 compatibility_date = "2026-11-19"
 compatibility_flags = ["nodejs_compat"]
+workers_dev = true
 
 # 1. Cloudflare D1 Relational SQLite Database
 [[d1_databases]]
 binding = "DB"
 database_name = "businesshub-production-db"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "0530e569-93c5-4f8c-963c-707024a4e146"
 migrations_dir = "migrations"
 
-# 2. Cloudflare R2 Object Storage
-[[r2_buckets]]
-binding = "STORAGE"
-bucket_name = "businesshub-media-production"
+# 2. Cloudflare R2 Object Storage (Uncomment once enabled in Cloudflare Dashboard)
+# [[r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "businesshub-media-production"
 
 # 3. Static Web Client Distribution
 [site]
