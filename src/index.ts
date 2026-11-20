@@ -5,16 +5,6 @@
 
 import { Router, RouteContext, jsonResponse, Env } from '@/lib/router';
 import { parseCookies } from '@/lib/auth';
-import { getAssetFromKV, serveSinglePageApp } from '@cloudflare/kv-asset-handler';
-// @ts-ignore
-import manifestJSON from '__STATIC_CONTENT_MANIFEST';
-
-let assetManifest: any = {};
-try {
-  assetManifest = JSON.parse(manifestJSON);
-} catch {
-  assetManifest = {};
-}
 
 import { UserRepository } from '@/repositories/UserRepository';
 import { ProductRepository } from '@/repositories/ProductRepository';
@@ -440,7 +430,7 @@ router.put('/api/v1/settings', async (ctx: RouteContext) => {
   return jsonResponse({ success: true, data: updated });
 }, requireAuth);
 
-// --- 13. CLOUDFLARE WORKER DEFAULT EXPORT ---
+// --- 13. CLOUDFLARE WORKER / PAGES DEFAULT EXPORT ---
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -448,37 +438,16 @@ export default {
       return await router.handle(request, env);
     }
 
-    try {
-      return await getAssetFromKV(
-        {
-          request,
-          waitUntil: (promise: Promise<any>) => ctx.waitUntil(promise),
-        },
-        {
-          ASSET_NAMESPACE: (env as any).__STATIC_CONTENT,
-          ASSET_MANIFEST: assetManifest,
-          mapRequestToAsset: serveSinglePageApp,
-        }
-      );
-    } catch (e: any) {
-      if (url.pathname === '/' || !url.pathname.includes('.')) {
-        try {
-          const indexRequest = new Request(new URL('/', request.url), request);
-          return await getAssetFromKV(
-            {
-              request: indexRequest,
-              waitUntil: (promise: Promise<any>) => ctx.waitUntil(promise),
-            },
-            {
-              ASSET_NAMESPACE: (env as any).__STATIC_CONTENT,
-              ASSET_MANIFEST: assetManifest,
-            }
-          );
-        } catch {
-          // fall through
-        }
+    // Cloudflare Pages native asset serving with SPA fallback
+    if ((env as any).ASSETS && typeof (env as any).ASSETS.fetch === 'function') {
+      const response = await (env as any).ASSETS.fetch(request);
+      if (response.status !== 404) {
+        return response;
       }
-      return new Response(`Asset Not Found: ${url.pathname}`, { status: 404 });
+      // SPA Fallback for client-side routing on Pages
+      return await (env as any).ASSETS.fetch(new Request(new URL('/', request.url), request));
     }
+
+    return new Response(`Asset Not Found: ${url.pathname}`, { status: 404 });
   },
 };

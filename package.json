@@ -8,6 +8,8 @@
     "typecheck": "tsc --noEmit",
     "dev": "vite",
     "build": "vite build",
+    "build:pages": "vite build && esbuild src/index.ts --bundle --format=esm --target=es2022 --outfile=dist/_worker.js",
+    "deploy:pages": "npm run build:pages && wrangler pages deploy dist --project-name businesshub-nutripot --branch main",
     "build:worker": "wrangler deploy --dry-run",
     "deploy": "wrangler deploy",
     "d1:migrate:local": "wrangler d1 migrations apply DB --local",
