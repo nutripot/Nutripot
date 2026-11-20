@@ -253,6 +253,19 @@ router.post('/api/v1/suppliers', async (ctx: RouteContext) => {
   return jsonResponse({ success: true, data: created }, 201);
 }, requireAuth);
 
+router.put('/api/v1/suppliers/:id', async (ctx: RouteContext) => {
+  const body = await ctx.request.json<any>();
+  const suppRepo = new SupplierRepository(ctx.env.DB);
+  const updated = await suppRepo.update(ctx.params.id, body);
+  return jsonResponse({ success: true, data: updated });
+}, requireAuth);
+
+router.delete('/api/v1/suppliers/:id', async (ctx: RouteContext) => {
+  const suppRepo = new SupplierRepository(ctx.env.DB);
+  await suppRepo.softDelete(ctx.params.id);
+  return jsonResponse({ success: true, data: { message: 'Supplier deactivated' } });
+}, requireAuth);
+
 router.get('/api/v1/suppliers/:id/ledger', async (ctx: RouteContext) => {
   const suppRepo = new SupplierRepository(ctx.env.DB);
   const ledger = await suppRepo.getLedger(ctx.params.id);
@@ -263,6 +276,12 @@ router.get('/api/v1/purchases', async (ctx: RouteContext) => {
   const purchRepo = new PurchaseRepository(ctx.env.DB);
   const bills = await purchRepo.list({});
   return jsonResponse({ success: true, data: bills });
+}, requireAuth);
+
+router.delete('/api/v1/purchases/:id', async (ctx: RouteContext) => {
+  const purchRepo = new PurchaseRepository(ctx.env.DB);
+  await purchRepo.deleteDraft(ctx.params.id);
+  return jsonResponse({ success: true, data: { message: 'Purchase bill deleted' } });
 }, requireAuth);
 
 router.post('/api/v1/purchases', async (ctx: RouteContext) => {
@@ -322,6 +341,19 @@ router.post('/api/v1/customers', async (ctx: RouteContext) => {
   return jsonResponse({ success: true, data: created }, 201);
 }, requireAuth);
 
+router.put('/api/v1/customers/:id', async (ctx: RouteContext) => {
+  const body = await ctx.request.json<any>();
+  const custRepo = new CustomerRepository(ctx.env.DB);
+  const updated = await custRepo.update(ctx.params.id, body);
+  return jsonResponse({ success: true, data: updated });
+}, requireAuth);
+
+router.delete('/api/v1/customers/:id', async (ctx: RouteContext) => {
+  const custRepo = new CustomerRepository(ctx.env.DB);
+  await custRepo.softDelete(ctx.params.id);
+  return jsonResponse({ success: true, data: { message: 'Customer deactivated' } });
+}, requireAuth);
+
 router.get('/api/v1/customers/:id/ledger', async (ctx: RouteContext) => {
   const custRepo = new CustomerRepository(ctx.env.DB);
   const ledger = await custRepo.getLedger(ctx.params.id);
@@ -332,6 +364,12 @@ router.get('/api/v1/sales', async (ctx: RouteContext) => {
   const salesRepo = new SalesRepository(ctx.env.DB);
   const invoices = await salesRepo.list({});
   return jsonResponse({ success: true, data: invoices });
+}, requireAuth);
+
+router.delete('/api/v1/sales/:id', async (ctx: RouteContext) => {
+  const salesRepo = new SalesRepository(ctx.env.DB);
+  await salesRepo.deleteDraft(ctx.params.id);
+  return jsonResponse({ success: true, data: { message: 'Sales invoice deleted' } });
 }, requireAuth);
 
 router.post('/api/v1/sales', async (ctx: RouteContext) => {
@@ -406,6 +444,19 @@ router.post('/api/v1/expenses', async (ctx: RouteContext) => {
   return jsonResponse({ success: true, data: created }, 201);
 }, requireAuth);
 
+router.put('/api/v1/expenses/:id', async (ctx: RouteContext) => {
+  const body = await ctx.request.json<any>();
+  const expRepo = new ExpenseRepository(ctx.env.DB);
+  const updated = await expRepo.update(ctx.params.id, body);
+  return jsonResponse({ success: true, data: updated });
+}, requireAuth);
+
+router.delete('/api/v1/expenses/:id', async (ctx: RouteContext) => {
+  const expRepo = new ExpenseRepository(ctx.env.DB);
+  await expRepo.delete(ctx.params.id);
+  return jsonResponse({ success: true, data: { message: 'Expense deleted' } });
+}, requireAuth);
+
 // --- 11. FINANCIAL REPORTING ENDPOINTS ---
 router.get('/api/v1/reports/profit-loss', async (ctx: RouteContext) => {
   const startDate = ctx.url.searchParams.get('startDate') || '2026-01-01';
@@ -432,7 +483,7 @@ router.put('/api/v1/settings', async (ctx: RouteContext) => {
 
 // --- 13. CLOUDFLARE WORKER / PAGES DEFAULT EXPORT ---
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname.startsWith('/api/')) {
       return await router.handle(request, env);

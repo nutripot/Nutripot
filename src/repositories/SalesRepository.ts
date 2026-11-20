@@ -218,4 +218,18 @@ export class SalesRepository implements ISalesRepository {
         .run();
     }
   }
+
+  async deleteDraft(id: string): Promise<void> {
+    const existing = await this.findById(id);
+    if (!existing) {
+      throw new Error(`Invoice with ID ${id} not found`);
+    }
+    if (existing.status !== 'DRAFT') {
+      throw new Error(`Cannot delete confirmed invoice with status ${existing.status}`);
+    }
+    await this.db.batch([
+      this.db.prepare('DELETE FROM sales_invoice_items WHERE sales_invoice_id = ?').bind(id),
+      this.db.prepare('DELETE FROM sales_invoices WHERE id = ?').bind(id),
+    ]);
+  }
 }

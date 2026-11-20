@@ -56,6 +56,26 @@ export const PurchaseListPage: React.FC = () => {
     }
   };
 
+  const handleDeleteDraft = async (id: string, num: string) => {
+    if (!window.confirm(`Delete draft bill ${num}? This cannot be undone.`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/v1/purchases/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const json = (await res.json()) as any;
+      if (json.success) {
+        fetchPurchases();
+      } else {
+        alert(json.error?.message || 'Failed to delete bill');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Network error');
+    }
+  };
+
   const filtered = bills.filter(
     (b) =>
       b.billNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -109,16 +129,21 @@ export const PurchaseListPage: React.FC = () => {
     },
     {
       key: 'id',
-      header: 'Action',
-      width: '120px',
+      header: 'Actions',
+      width: '180px',
       render: (b) =>
         b.status === 'DRAFT' ? (
-          <Button variant="primary" size="sm" onClick={() => handleConfirm(b.id)}>
-            Confirm Inward
-          </Button>
+          <div style={{ display: 'flex', gap: tokens.spacing[2] }}>
+            <Button variant="primary" size="sm" onClick={() => handleConfirm(b.id)}>
+              Confirm
+            </Button>
+            <Button variant="danger" size="sm" onClick={() => handleDeleteDraft(b.id, b.billNumber)}>
+              Delete
+            </Button>
+          </div>
         ) : (
-          <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.slate[400] }}>
-            Confirmed
+          <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.success[700], fontWeight: 500 }}>
+            Confirmed (Inwarded)
           </span>
         ),
     },
@@ -127,9 +152,9 @@ export const PurchaseListPage: React.FC = () => {
   return (
     <div>
       <PageHeader
-        title="Procurement & Purchase Bills"
-        subtitle="Inward goods receipts, GST input tax credits (ITC), and accounts payable (AP)"
-        actionLabel="Create Purchase Bill"
+        title="Purchases"
+        subtitle="Manage inward purchase bills, vendors, and payments"
+        actionLabel="New Purchase Bill"
         onAction={() => navigate('/purchases/create')}
       />
 

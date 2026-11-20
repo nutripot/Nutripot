@@ -56,6 +56,26 @@ export const SalesListPage: React.FC = () => {
     }
   };
 
+  const handleDeleteDraft = async (id: string, num: string) => {
+    if (!window.confirm(`Delete draft invoice ${num}? This cannot be undone.`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/v1/sales/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const json = (await res.json()) as any;
+      if (json.success) {
+        fetchInvoices();
+      } else {
+        alert(json.error?.message || 'Failed to delete invoice');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Network error');
+    }
+  };
+
   const filtered = invoices.filter(
     (inv) =>
       inv.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase())
@@ -109,15 +129,20 @@ export const SalesListPage: React.FC = () => {
     },
     {
       key: 'id',
-      header: 'Action',
-      width: '120px',
+      header: 'Actions',
+      width: '180px',
       render: (i) =>
         i.status === 'DRAFT' ? (
-          <Button variant="primary" size="sm" onClick={() => handleConfirm(i.id)}>
-            Issue Invoice
-          </Button>
+          <div style={{ display: 'flex', gap: tokens.spacing[2] }}>
+            <Button variant="primary" size="sm" onClick={() => handleConfirm(i.id)}>
+              Issue
+            </Button>
+            <Button variant="danger" size="sm" onClick={() => handleDeleteDraft(i.id, i.invoiceNumber)}>
+              Delete
+            </Button>
+          </div>
         ) : (
-          <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.slate[400] }}>
+          <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.success[700], fontWeight: 500 }}>
             Issued
           </span>
         ),

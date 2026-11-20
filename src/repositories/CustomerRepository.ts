@@ -173,6 +173,51 @@ export class CustomerRepository implements ICustomerRepository {
     }));
   }
 
+  async update(id: string, customer: Partial<Customer>): Promise<Customer> {
+    const existing = await this.findById(id);
+    if (!existing) {
+      throw new Error(`Customer with ID ${id} not found`);
+    }
+
+    const updated: Customer = {
+      ...existing,
+      ...customer,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await this.db
+      .prepare(
+        `UPDATE customers SET
+            name = ?, company_name = ?, phone = ?, email = ?, gstin = ?, pan = ?,
+            billing_address = ?, shipping_address = ?, credit_limit_paise = ?, credit_days = ?,
+            is_active = ?, updated_at = ?
+         WHERE id = ?`
+      )
+      .bind(
+        (updated.name || '').trim(),
+        updated.companyName ? updated.companyName.trim() : null,
+        updated.phone ? updated.phone.trim() : null,
+        updated.email ? updated.email.trim() : null,
+        updated.gstin ? updated.gstin.trim() : null,
+        updated.pan ? updated.pan.trim() : null,
+        updated.billingAddress ? updated.billingAddress.trim() : null,
+        updated.shippingAddress ? updated.shippingAddress.trim() : null,
+        Number(updated.creditLimitPaise ?? 0),
+        Number(updated.creditDays ?? 0),
+        updated.isActive !== false ? 1 : 0,
+        updated.updatedAt,
+        id
+      )
+      .run();
+
+    return updated;
+  }
+
+  async softDelete(id: string): Promise<void> {
+    const now = new Date().toISOString();
+    await this.db.prepare('UPDATE customers SET is_active = 0, updated_at = ? WHERE id = ?').bind(now, id).run();
+  }
+
   private mapRow(row: any): Customer {
     return {
       id: row.id,

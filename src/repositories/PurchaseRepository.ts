@@ -188,4 +188,18 @@ export class PurchaseRepository implements IPurchaseRepository {
     const now = new Date().toISOString();
     await this.db.prepare('UPDATE purchase_bills SET status = ?, updated_at = ? WHERE id = ?').bind(status, now, id).run();
   }
+
+  async deleteDraft(id: string): Promise<void> {
+    const existing = await this.findById(id);
+    if (!existing) {
+      throw new Error(`Bill with ID ${id} not found`);
+    }
+    if (existing.status !== 'DRAFT') {
+      throw new Error(`Cannot delete confirmed bill with status ${existing.status}`);
+    }
+    await this.db.batch([
+      this.db.prepare('DELETE FROM purchase_bill_items WHERE purchase_bill_id = ?').bind(id),
+      this.db.prepare('DELETE FROM purchase_bills WHERE id = ?').bind(id),
+    ]);
+  }
 }

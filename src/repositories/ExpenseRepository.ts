@@ -97,6 +97,44 @@ export class ExpenseRepository implements IExpenseRepository {
     };
   }
 
+  async update(id: string, expense: Partial<Expense>): Promise<Expense> {
+    const existing = await this.findById(id);
+    if (!existing) {
+      throw new Error(`Expense with ID ${id} not found`);
+    }
+
+    const updated: Expense = {
+      ...existing,
+      ...expense,
+    };
+
+    await this.db
+      .prepare(
+        `UPDATE expenses SET
+            category_id = ?, expense_date = ?, amount_paise = ?, payment_mode = ?,
+            payment_account = ?, payee_name = ?, description = ?, tax_deduction_paise = ?
+         WHERE id = ?`
+      )
+      .bind(
+        updated.categoryId,
+        updated.expenseDate,
+        Number(updated.amountPaise ?? 0),
+        updated.paymentMode,
+        updated.paymentAccount || 'DEFAULT',
+        (updated.payeeName || 'Vendor').trim(),
+        (updated.description || '').trim(),
+        Number(updated.taxDeductionPaise ?? 0),
+        id
+      )
+      .run();
+
+    return updated;
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.db.prepare('DELETE FROM expenses WHERE id = ?').bind(id).run();
+  }
+
   private mapRow(row: any): Expense {
     return {
       id: row.id,

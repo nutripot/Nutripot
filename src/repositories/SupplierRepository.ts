@@ -182,6 +182,53 @@ export class SupplierRepository implements ISupplierRepository {
     }));
   }
 
+  async update(id: string, supplier: Partial<Supplier>): Promise<Supplier> {
+    const existing = await this.findById(id);
+    if (!existing) {
+      throw new Error(`Supplier with ID ${id} not found`);
+    }
+
+    const updated: Supplier = {
+      ...existing,
+      ...supplier,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await this.db
+      .prepare(
+        `UPDATE suppliers SET
+            name = ?, contact_person = ?, phone = ?, email = ?, gstin = ?, pan = ?,
+            billing_address = ?, payment_terms_days = ?, bank_account_name = ?,
+            bank_account_number = ?, bank_ifsc = ?, bank_name = ?, is_active = ?, updated_at = ?
+         WHERE id = ?`
+      )
+      .bind(
+        (updated.name || '').trim(),
+        updated.contactPerson ? updated.contactPerson.trim() : null,
+        updated.phone ? updated.phone.trim() : null,
+        updated.email ? updated.email.trim() : null,
+        updated.gstin ? updated.gstin.trim() : null,
+        updated.pan ? updated.pan.trim() : null,
+        updated.billingAddress ? updated.billingAddress.trim() : null,
+        Number(updated.paymentTermsDays ?? 30),
+        updated.bankAccountName ? updated.bankAccountName.trim() : null,
+        updated.bankAccountNumber ? updated.bankAccountNumber.trim() : null,
+        updated.bankIfsc ? updated.bankIfsc.trim() : null,
+        updated.bankName ? updated.bankName.trim() : null,
+        updated.isActive !== false ? 1 : 0,
+        updated.updatedAt,
+        id
+      )
+      .run();
+
+    return updated;
+  }
+
+  async softDelete(id: string): Promise<void> {
+    const now = new Date().toISOString();
+    await this.db.prepare('UPDATE suppliers SET is_active = 0, updated_at = ? WHERE id = ?').bind(now, id).run();
+  }
+
   private mapRow(row: any): Supplier {
     return {
       id: row.id,

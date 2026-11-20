@@ -4,6 +4,7 @@
 // ============================================================================
 
 import React, { useEffect } from 'react';
+import { tokens } from '../../styles/tokens';
 
 interface ModalProps {
   isOpen: boolean;
@@ -146,7 +147,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               padding: '8px 16px',
               borderRadius: '6px',
               border: 'none',
-              backgroundColor: variant === 'danger' ? '#e11d48' : '#2563eb',
+              backgroundColor: variant === 'danger' ? tokens.colors.danger[600] : tokens.colors.primary[600],
               color: '#ffffff',
               fontWeight: 600,
               cursor: 'pointer',

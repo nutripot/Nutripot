@@ -399,6 +399,7 @@ export interface IPurchaseRepository {
   list(params: { supplierId?: string; status?: PurchaseBillStatus; limit?: number; offset?: number }): Promise<PurchaseBill[]>;
   create(bill: Omit<PurchaseBill, 'createdAt' | 'updatedAt'>, items: Omit<PurchaseBillItem, 'id' | 'purchaseBillId'>[]): Promise<PurchaseBill>;
   updateStatus(id: string, status: PurchaseBillStatus): Promise<void>;
+  deleteDraft(id: string): Promise<void>;
 }
 
 export interface ISalesRepository {
@@ -406,12 +407,15 @@ export interface ISalesRepository {
   list(params: { customerId?: string; status?: SalesInvoiceStatus; limit?: number; offset?: number }): Promise<SalesInvoice[]>;
   create(invoice: Omit<SalesInvoice, 'createdAt' | 'updatedAt'>, items: Omit<SalesInvoiceItem, 'id' | 'salesInvoiceId'>[]): Promise<SalesInvoice>;
   updateStatus(id: string, status: SalesInvoiceStatus, paidPaise?: number): Promise<void>;
+  deleteDraft(id: string): Promise<void>;
 }
 
 export interface ICustomerRepository {
   findById(id: string): Promise<Customer | null>;
   list(params: { search?: string; limit?: number; offset?: number }): Promise<Customer[]>;
   create(customer: Omit<Customer, 'createdAt' | 'updatedAt'>): Promise<Customer>;
+  update(id: string, customer: Partial<Customer>): Promise<Customer>;
+  softDelete(id: string): Promise<void>;
   updateBalance(id: string, balanceChangePaise: number): Promise<number>;
   appendLedger(entry: Omit<CustomerLedgerEntry, 'createdAt'>): Promise<CustomerLedgerEntry>;
   getLedger(customerId: string): Promise<CustomerLedgerEntry[]>;
@@ -421,6 +425,8 @@ export interface ISupplierRepository {
   findById(id: string): Promise<Supplier | null>;
   list(params: { search?: string; limit?: number; offset?: number }): Promise<Supplier[]>;
   create(supplier: Omit<Supplier, 'createdAt' | 'updatedAt'>): Promise<Supplier>;
+  update(id: string, supplier: Partial<Supplier>): Promise<Supplier>;
+  softDelete(id: string): Promise<void>;
   updateBalance(id: string, balanceChangePaise: number): Promise<number>;
   appendLedger(entry: Omit<SupplierLedgerEntry, 'createdAt'>): Promise<SupplierLedgerEntry>;
   getLedger(supplierId: string): Promise<SupplierLedgerEntry[]>;
@@ -436,6 +442,8 @@ export interface IExpenseRepository {
   create(expense: Omit<Expense, 'createdAt'>): Promise<Expense>;
   findById(id: string): Promise<Expense | null>;
   list(params: { categoryId?: string; startDate?: string; endDate?: string; limit?: number; offset?: number }): Promise<Expense[]>;
+  update(id: string, expense: Partial<Expense>): Promise<Expense>;
+  delete(id: string): Promise<void>;
 }
 
 export interface ISettingsRepository {
